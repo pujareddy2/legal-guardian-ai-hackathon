@@ -1,97 +1,123 @@
-Legal Guardian AI
-A Proactive AI Legal Assistant and Financial Guardian
-📄 Project Overview
-Legal Guardian AI is a revolutionary hackathon solution designed to empower individuals and small businesses by demystifying complex legal documents. The platform leverages Google's advanced generative AI to provide clear, actionable insights and proactive protection against legal and financial risks.
+# 📄 Legal Guardian AI: A Proactive AI Legal Assistant and Financial Guardian
 
-Our core backend is built with FastAPI, serving as a robust and scalable foundation that integrates multiple Google Cloud services to deliver an intelligent, secure, and user-friendly experience.
+Legal Guardian AI is a revolutionary hackathon solution designed to **empower individuals and small businesses** by demystifying complex legal documents. The platform leverages **Google's advanced generative AI** to provide clear, actionable insights and proactive protection against legal and financial risks.
 
-✨ Key Features
-Intelligent Document Processing: Utilizes Google's Document AI for accurate parsing of various legal documents and Gemini AI for generating simplified summaries and analyses.
+Our backend is built with **FastAPI**, serving as a robust and scalable foundation that integrates multiple **Google Cloud services** to deliver an intelligent, secure, and user-friendly experience.
 
-Predictive "What-If" Simulations: A unique feature that allows users to ask hypothetical questions about a contract. The AI provides a detailed, predictive analysis of potential consequences based on the document's clauses and a personalized user profile.
+---
 
-Secure Data Storage: Seamlessly integrates with a Firestore database to securely store document summaries. This lays the groundwork for advanced features like a crowd-sourced legal risk index.
+## ✨ Key Features
 
-Robust API Endpoints: A comprehensive suite of RESTful APIs provides a clear interface for the frontend application to interact with the core logic.
+- **Intelligent Document Processing**  
+  Uses **Google Document AI** for parsing legal documents and **Gemini AI** for generating simplified summaries and analyses.
 
-🚀 Getting Started for the Development Team
-This project is designed for collaborative development. Follow these steps to set up your local environment and begin contributing.
+- **Predictive "What-If" Simulations**  
+  Users can ask hypothetical questions about a contract. The AI provides predictive analysis of potential consequences based on clauses and a personalized user profile.
 
-Clone the Repository:
+- **Secure Data Storage**  
+  Seamless integration with **Firestore** to securely store document summaries, enabling features like a crowd-sourced legal risk index.
 
+- **Robust API Endpoints**  
+  A complete suite of RESTful APIs for frontend integration with the backend.
+
+---
+
+## 🚀 Getting Started (For Developers)
+
+Follow the steps below to set up the development environment.
+
+### 1. Clone the Repository
+```bash
 git clone https://github.com/pujareddy2/legal-guardian-ai-hackathon.git
 cd legal-guardian-ai-hackathon
+```
 
-
-Create Your Development Branch:
-
+### 2. Create a Development Branch
+```bash
 git checkout -b <your-feature-name>
+```
 
-
-Set Up the Python Environment:
-
+### 3. Set Up Python Virtual Environment
+```bash
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+```
+Activate the environment:
+- **Windows (PowerShell):**
+  ```bash
+  .\venv\Scripts\Activate.ps1
+  ```
+- **Linux/Mac:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+### 4. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-
-Configure Your Credentials: Securely store your API keys and credentials.
-
-Create a file named .env in the project directory.
-
-Add your credentials to the file:
-
+### 5. Configure Your Credentials
+Create a `.env` file in the project root directory and add your credentials:
+```env
 GOOGLE_API_KEY="YOUR_AI_STUDIO_API_KEY"
 GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\credentials-file.json"
+```
 
-
-Run the Server:
-
+### 6. Run the Development Server
+```bash
 uvicorn main:app --reload --env-file .env
+```
+The server will be available at:  
+👉 `http://127.0.0.1:8000`
 
+Interactive API documentation:  
+👉 `http://127.0.0.1:8000/docs`
 
-The server will be running at http://127.0.0.1:8000. You can view the interactive API documentation at http://127.0.0.1:8000/docs.
+---
 
-📌 API Reference
-Method
+## 📌 API Reference
 
-Endpoint
+### **GET /**
+- **Description:** Welcome message to confirm the server is running.
 
-Description
+### **GET /status**
+- **Description:** Checks if the API key and other configurations are correctly set.
 
-GET
+### **POST /analyze-document**
+- **Description:** Upload a file (`.txt` or `.pdf`) to receive an AI-generated summary.
 
-/
+### **POST /what-if-simulation**
+- **Description:** Send a JSON payload with document text and a user's question for predictive analysis.
 
-A welcome message to confirm the server is running.
+### **POST /store-document**
+- **Description:** Upload a file to get an AI summary and store the data in Firestore.
 
-GET
+### **GET /get-all-documents**
+- **Description:** Retrieves a list of all stored document summaries from Firestore.
 
-/status
+---
 
-Checks if the API key and other configurations are correctly set.
+## 🛠 Tech Stack
+- **Backend:** FastAPI (Python)
+- **AI Models:** Google Generative AI (Gemini), Google Document AI
+- **Database:** Google Firestore
+- **Hosting/Infra:** Google Cloud Platform
 
-POST
+---
 
-/analyze-document
+## 👥 Contribution Guidelines
+1. Fork the repo and create a new feature branch.
+2. Commit your changes with clear messages.
+3. Push the branch and create a Pull Request.
 
-Upload a file (.txt or .pdf) to receive an AI-generated summary.
+---
 
-POST
+## 📜 License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-/what-if-simulation
+---
 
-Send a JSON payload with document text and a user's question for predictive analysis.
-
-POST
-
-/store-document
-
-Upload a file to get an AI summary and save the data to Firestore.
-
-GET
-
-/get-all-documents
-
-Retrieves a list of all stored document summaries from Firestore.
+## 💡 Acknowledgements
+- **Google Cloud AI** for providing advanced AI capabilities.
+- **FastAPI** for making backend development fast and efficient.
 
