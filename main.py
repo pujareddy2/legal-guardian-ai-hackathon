@@ -163,41 +163,38 @@ async def what_if_simulation(request: dict):
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}
 
+from fastapi import Form
+
 @app.post("/store-document")
-async def store_document(file: UploadFile):
-    """
-    Processes and stores a document in Firestore.
-    """
+async def store_document(file: UploadFile, outcome_label: int = Form(...)):  # Make it required; or use None for optional
     try:
-        # Check if the database client is initialized.
         if db is None:
             return {"status": "ERROR", "message": "Firestore client not initialized. Check your credentials."}
 
         content = await file.read()
         parsed_text = content.decode("utf-8")
-        
-        # Use Gemini to generate a summary to save.
+
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
         prompt = f"Summarize this document:\n\n'{parsed_text}'"
         response = model.generate_content(prompt)
         summary = response.text
 
-        # Create a document in Firestore.
         doc_ref = db.collection("legal-documents").document()
         doc_ref.set({
             "filename": file.filename,
             "summary": summary,
+            "outcome_label": outcome_label,  # Store the label here
             "created_at": firestore.SERVER_TIMESTAMP
         })
 
         return {
             "document_id": doc_ref.id,
-            "message": "Document and summary saved successfully.",
+            "message": "Document, summary, and label saved successfully.",
             "status": "SUCCESS"
         }
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}
-    
+
 @app.get("/get-all-documents")
 def get_all_documents():
     """
@@ -228,3 +225,9 @@ def get_all_documents():
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}
 
+from legal_risk_index import router as risk_router
+app.include_router(risk_router)
+from predictive_legal_outcome_model import router as plom_router
+app.include_router(plom_router)
+from human_in_loop import router as hil_router
+app.include_router(hil_router)
