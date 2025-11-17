@@ -256,6 +256,47 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - **Google Cloud AI** for providing advanced AI capabilities.  
 - **FastAPI** for making backend development fast and efficient.
 
-***
+***     
+<h1> Outputs </h1>
+
+![WhatsApp Image 2025-11-17 at 09 23 11_f53dff86](https://github.com/user-attachments/assets/f650fc09-5d21-4985-8a9f-f69829b8cf0c)
+
+
+
+
+![WhatsApp Image 2025-11-17 at 09 23 12_c21ef920](https://github.com/user-attachments/assets/8fb20473-13f9-4b86-881c-536f33548de2)
+
+![WhatsApp Image 2025-11-17 at 09 23 12_f25f7c4c](https://github.com/user-attachments/assets/1faccc37-b078-48b7-b7aa-9bf6aa20dd6a)
+
+![WhatsApp Image 2025-11-17 at 09 23 13_644d7974](https://github.com/user-attachments/assets/5076921a-61c8-42e8-a7ad-15380fbdeb59)
+![WhatsApp Image 2025-11-17 at 09 23 13_3d7efa86](https://github.com/user-attachments/assets/a056890a-f69e-4698-80fd-72159ad44592)
+![WhatsApp Image 2025-11-17 at 09 23 13_76cfe82a](https://github.com/user-attachments/assets/dc414808-58b1-46a6-b1dc-c61c4c1f0f15)
+![WhatsApp Image 2025-11-17 at 09 23 14_c0ac61f0](https://github.com/user-attachments/assets/cf9fec07-0f25-4195-8b37-03be3eb0329b)
+
+![WhatsApp Image 2025-11-17 at 09 23 14_550353f4](https://github.com/user-attachments/assets/56bf8928-d873-4f52-9bd6-e9c98b7e0c42)
+
+![WhatsApp Image 2025-11-17 at 09 23 14_ebb77ddd](https://github.com/user-attachments/assets/53146cd0-9bda-497a-8fc6-5f76dd6ce3b9)
+
+
+
+<h2> DRIVE LINK </h2>
+
+https://drive.google.com/file/d/16N5U0t2lNEl3IlToS0_1DNWtryRPUrCG/view?usp=drivesdk
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 This combined README merges project introduction, features, setup instructions, technical and AI/ML operation details, plus privacy/security implementation instructions for ease of reference and development guidance.
