@@ -1,0 +1,1 @@
+{"ignore": ["*.py"], "builds": [{"src": "frontend/package.json", "use": "@vercel/react"}]}
