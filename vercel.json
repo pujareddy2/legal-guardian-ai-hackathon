@@ -1,6 +1,6 @@
 {
-	"framework": "create-react-app",
-	"installCommand": "npm install",
 	"buildCommand": "npm run build",
-	"outputDirectory": "build"
+	"outputDirectory": "build",
+	"installCommand": "npm install",
+	"ignoreCommand": "git diff --quiet HEAD~1 HEAD -- src/ public/ package.json"
 }

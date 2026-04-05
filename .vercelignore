@@ -1,33 +1,13 @@
-# Python backend files
+# Ignore Python backend - only deploy React frontend
 requirements.txt
 main.py
 app.py
-*.py
 Dockerfile
 .dockerignore
 .gcloudignore
-deploy-gcloud.sh
 deploy-to-gcloud.sh
-
-# Python cache
-__pycache__/
 *.pyc
-*.pyo
+__pycache__/
 venv/
 env/
 .env
-.env.*
-
-# Other
-.git
-.github
-*.egg-info
-dist
-build
-.pytest_cache
-.coverage
-htmlcov/
-.vercel
-.DS_Store
-npm-debug.log
-yarn-error.log
