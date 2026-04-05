@@ -1,9 +1,10 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import aiplatform
 from vertexai.generative_models import GenerativeModel
 import google.generativeai as genai
 import os
+import json
 from google.cloud import firestore
 from google.oauth2 import service_account
 
@@ -18,7 +19,7 @@ def _load_cors_origins():
 
 
 def _load_cors_regex():
-    return os.getenv("CORS_ORIGIN_REGEX", r"https://.*\\.vercel\\.app")
+    return os.getenv("CORS_ORIGIN_REGEX", r"https://.*\.vercel\.app")
 
 
 # Create an instance of the FastAPI class.
@@ -66,7 +67,9 @@ def parse_document_pdf(file_content: bytes):
     try:
         from google.cloud.documentai_v1 import DocumentProcessorServiceClient, RawDocument
         
-        client = DocumentProcessorServiceClient()
+        client = DocumentProcessorServiceClient(
+            client_options={"api_endpoint": f"{LOCATION}-documentai.googleapis.com"}
+        )
         processor_name = client.processor_path(PROJECT_ID, LOCATION, PROCESSOR_ID)
         
         # The API needs the content as a raw byte stream.
@@ -76,10 +79,52 @@ def parse_document_pdf(file_content: bytes):
         response = client.process_document(request=request)
         document = response.document
 
-        return document.text
+        return (document.text or "").strip()
             
     except Exception as e:
-        return str(e)
+        raise RuntimeError(f"Document AI parsing failed: {str(e)}") from e
+
+
+def _extract_structured_data(parsed_text: str):
+    model = genai.GenerativeModel(GEMINI_MODEL_NAME)
+    prompt = f"""
+    Extract important legal fields from this document text and return only strict JSON.
+    Use this structure exactly:
+    {{
+      "parties": ["..."],
+      "effective_date": "...",
+      "termination_clause": "...",
+      "payment_terms": "...",
+      "governing_law": "...",
+      "key_obligations": ["..."],
+      "risk_flags": ["..."]
+    }}
+    If a field is unknown, use an empty string or empty array.
+
+    Document text:
+    {parsed_text[:12000]}
+    """
+    response = model.generate_content(prompt)
+    raw_text = (response.text or "").strip()
+
+    # Gemini may wrap JSON in markdown fences.
+    if raw_text.startswith("```"):
+        raw_text = raw_text.strip("`")
+        raw_text = raw_text.replace("json", "", 1).strip()
+
+    try:
+        data = json.loads(raw_text)
+    except Exception:
+        data = {
+            "parties": [],
+            "effective_date": "",
+            "termination_clause": "",
+            "payment_terms": "",
+            "governing_law": "",
+            "key_obligations": [],
+            "risk_flags": [],
+        }
+    return data
 
 # --- API Endpoints ---
 @app.get("/")
@@ -115,29 +160,46 @@ def read_status():
 @app.post("/analyze-document")
 async def analyze_document(file: UploadFile):
     try:
-        content = await file.read()
-        file_extension = file.filename.split('.')[-1].lower()
-        
-        if file_extension == 'pdf':
-            # This part is for when you test with a PDF.
-            parsed_text = parse_document_pdf(content)
-        else:
-            # This part will handle your contract.txt file.
-            parsed_text = content.decode("utf-8")
+        if not file or not file.filename:
+            raise HTTPException(status_code=400, detail="No file provided.")
 
-        if "error" in parsed_text.lower():
-            return {"status": "ERROR", "message": parsed_text}
+        content = await file.read()
+        if not content:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+
+        file_extension = file.filename.split('.')[-1].lower()
+
+        if file_extension == 'pdf':
+            parsed_text = parse_document_pdf(content)
+        elif file_extension == 'txt':
+            parsed_text = content.decode("utf-8", errors="replace")
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported file type. Please upload a PDF or TXT file.",
+            )
+
+        if not parsed_text.strip():
+            raise HTTPException(status_code=422, detail="Could not extract text from document.")
+
+        if "error" in parsed_text.lower() and "http" in parsed_text.lower():
+            raise HTTPException(status_code=502, detail=parsed_text)
 
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
         prompt = f"Analyze the following legal document and provide a summary of the key points in simple language:\n\n'{parsed_text}'"
         response = model.generate_content(prompt)
         simplified_summary = response.text
+        structured_data = _extract_structured_data(parsed_text)
 
         return {
             "filename": file.filename,
             "summary": simplified_summary,
+            "structured_data": structured_data,
+            "text_length": len(parsed_text),
             "status": "SUCCESS"
         }
+    except HTTPException as e:
+        return {"status": "ERROR", "message": e.detail}
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}
 

@@ -1,13 +1,54 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('CHECKING');
+  const [statusMessage, setStatusMessage] = useState('Connecting to analysis engine...');
+  const [pointer, setPointer] = useState({ x: 0.5, y: 0.5 });
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+
+  useEffect(() => {
+    const pingBackend = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/status`);
+        const data = await res.json();
+        if (res.ok && data.status === 'SUCCESS') {
+          setBackendStatus('ONLINE');
+          setStatusMessage('Backend is online and ready for scans.');
+        } else {
+          setBackendStatus('DEGRADED');
+          setStatusMessage(data.message || 'Backend responded with an issue.');
+        }
+      } catch (checkErr) {
+        setBackendStatus('OFFLINE');
+        setStatusMessage('Backend unreachable. Check REACT_APP_API_URL and CORS settings.');
+      }
+    };
+
+    pingBackend();
+  }, [API_BASE_URL]);
+
+  useEffect(() => {
+    const onMove = (event) => {
+      const x = event.clientX / window.innerWidth;
+      const y = event.clientY / window.innerHeight;
+      setPointer({ x, y });
+    };
+
+    window.addEventListener('pointermove', onMove);
+    return () => window.removeEventListener('pointermove', onMove);
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--pointer-x', String(pointer.x));
+    root.style.setProperty('--pointer-y', String(pointer.y));
+  }, [pointer]);
 
   const onFileChange = (event) => {
     const file = event.target.files?.[0] || null;
@@ -34,7 +75,7 @@ function App() {
         method: 'POST',
         body: formData,
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok || data.status !== 'SUCCESS') {
         throw new Error(data.message || 'Failed to analyze document.');
@@ -48,10 +89,27 @@ function App() {
     }
   };
 
-  const structuredEntries = Object.entries(result?.structured_data || {});
+  const structuredEntries = useMemo(
+    () => Object.entries(result?.structured_data || {}),
+    [result]
+  );
+
+  const statusToneClass =
+    backendStatus === 'ONLINE'
+      ? 'tone-online'
+      : backendStatus === 'DEGRADED'
+      ? 'tone-warn'
+      : backendStatus === 'OFFLINE'
+      ? 'tone-offline'
+      : 'tone-checking';
 
   return (
     <div className="app-root">
+      <div className="bg-grid" />
+      <div className="orb orb-a" />
+      <div className="orb orb-b" />
+      <div className="orb orb-c" />
+
       <header className="top-nav">
         <div className="brand">LEGAL GUARDIAN</div>
         <div className="nav-right">
@@ -67,6 +125,13 @@ function App() {
           <p className="subtitle">
             Drop in your contract and get instant plain-English insights, obligations, and hidden risk flags.
           </p>
+
+          <div className={`backend-badge ${statusToneClass}`}>
+            <span className="dot" />
+            <strong>{backendStatus}</strong>
+            <span>{statusMessage}</span>
+          </div>
+
           <div className="highlights">
             <span>Fast PDF Analysis</span>
             <span>Simple Language Summary</span>
@@ -108,6 +173,21 @@ function App() {
             <p>Use insights to negotiate, compare, and make better decisions.</p>
           </article>
         </div>
+
+        <div className="pipeline-rail">
+          <div className="rail-step active">
+            <span>1</span>
+            <p>Upload contract</p>
+          </div>
+          <div className="rail-step active">
+            <span>2</span>
+            <p>Scan with AI</p>
+          </div>
+          <div className={`rail-step ${result ? 'active' : ''}`}>
+            <span>3</span>
+            <p>Review risks</p>
+          </div>
+        </div>
       </section>
 
       {result && (
@@ -146,6 +226,7 @@ function App() {
       <footer className="footer-strip">
         <span>Legal Guardian AI</span>
         <span>Cinematic Contract Intelligence</span>
+        <span className="api-label">API: {API_BASE_URL}</span>
       </footer>
     </div>
   );

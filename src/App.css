@@ -1,14 +1,71 @@
+:root {
+  --pointer-x: 0.5;
+  --pointer-y: 0.5;
+}
+
 .app-root {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 20% 15%, rgba(229, 9, 20, 0.28), transparent 35%),
-    radial-gradient(circle at 80% 10%, rgba(155, 24, 34, 0.24), transparent 30%),
-    linear-gradient(180deg, #070707 0%, #121212 45%, #0f0f10 100%);
+    radial-gradient(circle at 20% 15%, rgba(229, 9, 20, 0.3), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgba(155, 24, 34, 0.2), transparent 30%),
+    linear-gradient(160deg, #050505 0%, #101114 45%, #0e0f13 100%);
   color: #f4f4f5;
   padding: 20px 20px 48px;
 }
 
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at 50% 40%, black 30%, transparent 85%);
+  pointer-events: none;
+  z-index: -3;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(40px);
+  opacity: 0.45;
+  animation: drift 14s ease-in-out infinite alternate;
+  z-index: -2;
+}
+
+.orb-a {
+  width: 340px;
+  height: 340px;
+  top: -80px;
+  left: -70px;
+  background: radial-gradient(circle at 35% 35%, #ff5b5b, transparent 70%);
+}
+
+.orb-b {
+  width: 290px;
+  height: 290px;
+  top: 25%;
+  right: 4%;
+  background: radial-gradient(circle at 35% 35%, #ff944d, transparent 70%);
+  animation-delay: 1.4s;
+}
+
+.orb-c {
+  width: 360px;
+  height: 360px;
+  bottom: -120px;
+  left: 45%;
+  background: radial-gradient(circle at 35% 35%, #e50914, transparent 70%);
+  animation-delay: 0.7s;
+}
+
 .top-nav {
+  position: relative;
+  z-index: 3;
   max-width: 1120px;
   margin: 0 auto;
   display: flex;
@@ -44,6 +101,8 @@
 }
 
 .hero {
+  position: relative;
+  z-index: 2;
   max-width: 1120px;
   margin: 0 auto;
   display: grid;
@@ -52,6 +111,11 @@
 }
 
 .hero-content {
+  transform-style: preserve-3d;
+  transform: perspective(900px)
+    rotateX(calc((var(--pointer-y) - 0.5) * -4deg))
+    rotateY(calc((var(--pointer-x) - 0.5) * 6deg));
+  transition: transform 0.2s ease;
   background:
     linear-gradient(120deg, rgba(229, 9, 20, 0.2), rgba(255, 255, 255, 0.03)),
     radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1), transparent 35%);
@@ -82,6 +146,51 @@
   max-width: 55ch;
 }
 
+.backend-badge {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.backend-badge .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 16px currentColor;
+}
+
+.backend-badge strong {
+  font-size: 0.8rem;
+  letter-spacing: 0.07em;
+}
+
+.backend-badge span {
+  font-size: 0.88rem;
+}
+
+.tone-online {
+  color: #61f2a8;
+}
+
+.tone-warn {
+  color: #ffd37d;
+}
+
+.tone-offline {
+  color: #ff8080;
+}
+
+.tone-checking {
+  color: #93c5fd;
+}
+
 .hero-actions {
   margin-top: 22px;
   display: flex;
@@ -98,10 +207,12 @@
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .play-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(255, 255, 255, 0.2);
 }
 
 .meta {
@@ -125,6 +236,11 @@
 }
 
 .glass-panel {
+  transform-style: preserve-3d;
+  transform: perspective(900px)
+    rotateX(calc((var(--pointer-y) - 0.5) * 3deg))
+    rotateY(calc((var(--pointer-x) - 0.5) * -5deg));
+  transition: transform 0.2s ease;
   background: rgba(15, 15, 16, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
@@ -180,6 +296,8 @@ input[type='file'] {
 }
 
 .content-rows {
+  position: relative;
+  z-index: 2;
   max-width: 1120px;
   margin: 24px auto 0;
 }
@@ -199,12 +317,14 @@ input[type='file'] {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   padding: 16px;
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transform-style: preserve-3d;
 }
 
 .mini-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px) rotateX(4deg);
   border-color: rgba(229, 9, 20, 0.5);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.35);
 }
 
 .mini-card h4 {
@@ -216,7 +336,48 @@ input[type='file'] {
   color: #d0d0d5;
 }
 
+.pipeline-rail {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rail-step {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  opacity: 0.55;
+}
+
+.rail-step.active {
+  opacity: 1;
+  border-color: rgba(255, 128, 128, 0.5);
+  background: linear-gradient(120deg, rgba(229, 9, 20, 0.2), rgba(255, 255, 255, 0.03));
+}
+
+.rail-step span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.14);
+  font-weight: 700;
+}
+
+.rail-step p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
 .result-wrap {
+  position: relative;
+  z-index: 2;
   max-width: 1120px;
   margin: 24px auto 0;
   display: grid;
@@ -229,6 +390,7 @@ input[type='file'] {
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 14px;
   padding: 16px;
+  box-shadow: 0 20px 32px rgba(0, 0, 0, 0.25);
 }
 
 .reveal {
@@ -297,6 +459,8 @@ input[type='file'] {
 }
 
 .footer-strip {
+  position: relative;
+  z-index: 2;
   max-width: 1120px;
   margin: 24px auto 0;
   padding-top: 12px;
@@ -307,10 +471,27 @@ input[type='file'] {
   font-size: 0.9rem;
 }
 
+.api-label {
+  color: #aeb0ba;
+  max-width: 50ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @keyframes fadeUp {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(25px, -20px, 0) scale(1.08);
   }
 }
 
@@ -340,5 +521,14 @@ input[type='file'] {
   .footer-strip {
     flex-direction: column;
     gap: 6px;
+  }
+
+  .api-label {
+    white-space: normal;
+  }
+
+  .hero-content,
+  .glass-panel {
+    transform: none;
   }
 }
